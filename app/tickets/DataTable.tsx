@@ -1,5 +1,6 @@
 import { Ticket } from "@prisma/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import TicketStatusBadge from "@/components/TicketStatusBadge";
 
 interface Props {
     tickets: Ticket[];
@@ -16,7 +17,9 @@ const DataTable = ({tickets}: Props) => {
                                 Title
                             </TableHead>
                             <TableHead>
-                                Status
+                                <div className="flex justify-center">
+                                    Status
+                                </div>
                             </TableHead>
                             <TableHead>
                                 Priority
@@ -34,7 +37,9 @@ const DataTable = ({tickets}: Props) => {
                                         {ticket.title}
                                     </TableCell>
                                     <TableCell>
-                                        {ticket.status}
+                                        <div className="flex justify-center">
+                                            <TicketStatusBadge status={ticket.status}></TicketStatusBadge>
+                                        </div>
                                     </TableCell>
                                     <TableCell>
                                         {ticket.priority}
