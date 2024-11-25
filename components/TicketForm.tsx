@@ -13,12 +13,15 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { Ticket } from "@prisma/client";
 
 type TicketFormData = z.infer<typeof ticketSchema>;
 
+interface Props {
+    ticket?: Ticket;
+}
 
-const TicketForm = () => {
-
+const TicketForm = ({ticket}: Props) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter()
@@ -32,7 +35,11 @@ const TicketForm = () => {
             setIsSubmitting(true)
             setError("")
 
-            await axios.post("/api/tickets", values);
+            if(ticket) {
+                await axios.patch("/api/tickets/" + ticket.id, values);
+            } else {
+                await axios.post("/api/tickets", values);
+            }
             setIsSubmitting(false);
             router.push("/tickets");
             router.refresh();
@@ -49,6 +56,7 @@ const TicketForm = () => {
                     <FormField
                         control={form.control}
                         name="title"
+                        defaultValue={ticket?.title}
                         render={({field}) => (
                             <FormItem>
                                 <FormLabel>Ticket Title</FormLabel>
@@ -58,20 +66,29 @@ const TicketForm = () => {
                             </FormItem>
                         )}
                     />
-                    <Controller name="description" control={form.control} render={({field}) => (
-                        <SimpleMDE placeholder="Description" {...field} />
-                    )} />
+                    <Controller
+                        name="description"
+                        control={form.control}
+                        defaultValue={ticket?.description}
+                        render={({field}) => (
+                            <SimpleMDE placeholder="Description" {...field} />
+                        )}
+                    />
                     <div className="flex w-full space-x-4">
                         <FormField
                             control={form.control}
                             name="status"
+                            defaultValue={ticket?.status}
                             render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Status</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Status..." />
+                                                <SelectValue
+                                                    placeholder="Status..."
+                                                    defaultValue={ticket?.status}
+                                                />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -86,13 +103,17 @@ const TicketForm = () => {
                         <FormField
                             control={form.control}
                             name="priority"
+                            defaultValue={ticket?.priority}
                             render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Priority</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Priority..." />
+                                                <SelectValue
+                                                    placeholder="Priority..."
+                                                    defaultValue={ticket?.priority}
+                                                />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -105,7 +126,9 @@ const TicketForm = () => {
                             )}
                         />
                     </div>
-                    <Button type="submit" disabled={isSubmitting}>Submit</Button>
+                    <Button type="submit" disabled={isSubmitting}>
+                        {ticket ? "Update Ticket" : "Create Ticket"}
+                    </Button>
                 </form>
             </Form>
         </div>
