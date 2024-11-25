@@ -9,18 +9,37 @@ import { Input } from "@/components/ui/input";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 type TicketFormData = z.infer<typeof ticketSchema>;
 
 
 const TicketForm = () => {
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState("");
+    const router = useRouter()
+
     const form = useForm<TicketFormData>({
         resolver: zodResolver(ticketSchema),
     });
 
     async function onSubmit(values: z.infer<typeof ticketSchema>) {
-        console.log(values)
+        try {
+            setIsSubmitting(true)
+            setError("")
+
+            await axios.post("/api/tickets", values);
+            setIsSubmitting(false);
+            router.push("/tickets");
+            router.refresh();
+        } catch (error) {
+            setError("Unknonw error");
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -86,6 +105,7 @@ const TicketForm = () => {
                             )}
                         />
                     </div>
+                    <Button type="submit" disabled={isSubmitting}>Submit</Button>
                 </form>
             </Form>
         </div>
