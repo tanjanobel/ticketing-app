@@ -11,6 +11,7 @@ import TicketStatusBadge from "@/components/TicketStatusBadge";
 import TicketPriority from "@/components/TicketPriority";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import ReactMarkDown from "react-markdown";
 
 interface Props {
     ticket: Ticket;
@@ -36,8 +37,10 @@ const TicketDetail = ({ticket}: Props) => {
                         hour12: false,
                     })}</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    {ticket.description}
+                <CardContent className="prose dark:prose-invert">
+                    <ReactMarkDown>
+                        {ticket.description}
+                    </ReactMarkDown>
                 </CardContent>
                 <CardFooter>
                     Updated: {ticket.updatedAt.toLocaleDateString("de-DE", {
