@@ -1,7 +1,9 @@
+import UserForm from "@/components/UserForm";
+
 const Users = () => {
     return (
         <div>
-            Users
+            <UserForm />
         </div>
     );
 };
